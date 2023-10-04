@@ -103,7 +103,7 @@ export default function App() {
 
   // very important, this fix the problem with network request on inspect mode.
   useEffect(
-    function () {
+    function() {
       async function fetchMovies() {
         try {
           setIsLoading(true);
@@ -299,11 +299,10 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
-  const watchedUserRating = watched.find(
-    (movie) => movie.imdbID === selectedId
-  )?.userRating;
+  const watchedUserRating = watched.find((movie) => movie.imdbID === selectedId)
+    ?.userRating;
 
-  console.log(isWatched);
+  // console.log(isWatched);
 
   const {
     Title: title,
@@ -335,7 +334,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   }
 
   useEffect(
-    function () {
+    function() {
       async function getMovieDetails() {
         setIsLoading(true);
         const res = await fetch(
@@ -352,9 +351,14 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   );
 
   useEffect(
-    function () {
+    function() {
       if (!title) return;
       document.title = `Movie | ${title}`;
+
+      // cleanup function for reset the document.title to it original form.
+      return function() {
+        document.title = 'usePopcorn';
+      };
     },
     [title]
   );
