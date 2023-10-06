@@ -104,12 +104,16 @@ export default function App() {
   // very important, this fix the problem with network request on inspect mode.
   useEffect(
     function() {
+      //  abort controller for use on our cleanup function.
+      const controller = new AbortController();
+
       async function fetchMovies() {
         try {
           setIsLoading(true);
           setError('');
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           if (!res.ok)
@@ -125,7 +129,10 @@ export default function App() {
           console.log(data);
         } catch (err) {
           console.error(err.message);
-          setError(err.message);
+          // condition for the abort controller error message. This will hepl stop showing the error message "The user aborted a request".
+          if (err.name !== 'AbortError') {
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -136,7 +143,13 @@ export default function App() {
         setError('');
         return;
       }
+
+      handleCloseMovie();
       fetchMovies();
+
+      return function() {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -333,6 +346,24 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
 
+  // useEffect for ESC Key
+  useEffect(
+    function() {
+      function callback(e) {
+        if (e.code === 'Escape') {
+          onCloseMovie();
+          console.log('Closing movie');
+        }
+      }
+      document.addEventListener('keydown', callback);
+
+      return function() {
+        document.removeEventListener('keydown', callback);
+      };
+    },
+    [onCloseMovie]
+  );
+
   useEffect(
     function() {
       async function getMovieDetails() {
@@ -358,6 +389,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       // cleanup function for reset the document.title to it original form.
       return function() {
         document.title = 'usePopcorn';
+        console.log(`Clean up effect for movie ${title}`);
       };
     },
     [title]
