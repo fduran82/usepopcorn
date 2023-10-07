@@ -1,55 +1,52 @@
 import { useEffect, useRef, useState } from 'react';
 import StarRating from './StarRating';
-import { useKey } from './useKey';
-import { useMovies } from './useMovies';
-import { useLocalStorageState } from './useLocalStorageState';
 
-// const tempMovieData = [
-//   {
-//     imdbID: 'tt1375666',
-//     Title: 'Inception',
-//     Year: '2010',
-//     Poster:
-//       'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-//   },
-//   {
-//     imdbID: 'tt0133093',
-//     Title: 'The Matrix',
-//     Year: '1999',
-//     Poster:
-//       'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
-//   },
-//   {
-//     imdbID: 'tt6751668',
-//     Title: 'Parasite',
-//     Year: '2019',
-//     Poster:
-//       'https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg',
-//   },
-// ];
+const tempMovieData = [
+  {
+    imdbID: 'tt1375666',
+    Title: 'Inception',
+    Year: '2010',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+  },
+  {
+    imdbID: 'tt0133093',
+    Title: 'The Matrix',
+    Year: '1999',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
+  },
+  {
+    imdbID: 'tt6751668',
+    Title: 'Parasite',
+    Year: '2019',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg',
+  },
+];
 
-// const tempWatchedData = [
-//   {
-//     imdbID: 'tt1375666',
-//     Title: 'Inception',
-//     Year: '2010',
-//     Poster:
-//       'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-//     runtime: 148,
-//     imdbRating: 8.8,
-//     userRating: 10,
-//   },
-//   {
-//     imdbID: 'tt0088763',
-//     Title: 'Back to the Future',
-//     Year: '1985',
-//     Poster:
-//       'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-//     runtime: 116,
-//     imdbRating: 8.5,
-//     userRating: 9,
-//   },
-// ];
+const tempWatchedData = [
+  {
+    imdbID: 'tt1375666',
+    Title: 'Inception',
+    Year: '2010',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+    runtime: 148,
+    imdbRating: 8.8,
+    userRating: 10,
+  },
+  {
+    imdbID: 'tt0088763',
+    Title: 'Back to the Future',
+    Year: '1985',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
+    runtime: 116,
+    imdbRating: 8.5,
+    userRating: 9,
+  },
+];
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -63,14 +60,16 @@ export default function App() {
   // 99cf342a
 
   const [query, setQuery] = useState('');
+  const [movies, setMovies] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [selectedId, setSelectedId] = useState(null);
-  const { movies, isLoading, error } = useMovies(query);
 
-  const [watched, setWatched] = useLocalStorageState([], 'watched');
-  // const [watched, setWatched] = useState(function () {
-  //   const storedValue = JSON.parse(localStorage.getItem('watched')) || [];
-  //   return storedValue;
-  // });
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const storedValue = JSON.parse(localStorage.getItem('watched')) || [];
+    return storedValue;
+  });
 
   // const tempQuery = 'interstellar';
 
@@ -106,6 +105,67 @@ export default function App() {
   function handleDeletedWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+  useEffect(
+    function () {
+      localStorage.setItem('watched', JSON.stringify(watched));
+    },
+    [watched]
+  );
+
+  // very important, this fix the problem with network request on inspect mode.
+  useEffect(
+    function () {
+      //  abort controller for use on our cleanup function.
+      const controller = new AbortController();
+
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setError('');
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
+          );
+
+          if (!res.ok)
+            throw new Error(
+              'something went wrong with fetching movies request.'
+            );
+
+          const data = await res.json();
+          if (data.Response === 'False')
+            throw new Error(' Movie not found!...Try again.');
+
+          setMovies(data.Search);
+          console.log(data);
+        } catch (err) {
+          console.error(err.message);
+          // condition for the abort controller error message. This will hepl stop showing the error message "The user aborted a request".
+          if (err.name !== 'AbortError') {
+            console.log(err.message);
+            setError(err.message);
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      if (query.length < 3) {
+        setMovies([]);
+        setError('');
+        return;
+      }
+
+      handleCloseMovie();
+      fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
+    },
+    [query]
+  );
 
   return (
     <>
@@ -191,14 +251,24 @@ function Logo() {
 function Search({ query, setQuery }) {
   const inputEl = useRef(null);
 
-  console.log(inputEl);
+  useEffect(
+    function () {
+      function callback(e) {
+        // if current active element it's the search, we skip next statement. So we can enter the text on the search input
+        if (document.activeElement === inputEl) return;
+        if (e.code === 'Enter') {
+          inputEl.current.focus();
+          console.log(inputEl.current);
+          // clean search input when press enter
+          setQuery('');
+        }
+      }
 
-  useKey('Enter', function () {
-    console.log('enter');
-    if (document.activeElement === inputEl.current) return;
-    inputEl.current.focus();
-    setQuery('');
-  });
+      document.addEventListener('keydown', callback);
+      return () => document.addEventListener('keydown', callback);
+    },
+    [setQuery]
+  );
 
   return (
     <input
@@ -327,7 +397,23 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
 
-  useKey('Escape', onCloseMovie);
+  // useEffect for ESC Key
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === 'Escape') {
+          onCloseMovie();
+          console.log('Closing movie');
+        }
+      }
+      document.addEventListener('keydown', callback);
+
+      return function () {
+        document.removeEventListener('keydown', callback);
+      };
+    },
+    [onCloseMovie]
+  );
 
   useEffect(
     function () {
